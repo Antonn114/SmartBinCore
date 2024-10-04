@@ -2,11 +2,16 @@
 
 from socket import *
 from struct import pack
-from SBCamera import SBCamera
 import cv2
 import numpy as np
 
-camera = SBCamera()
+from picamera2 import Picamera2, Preview
+from picamera2.encoders import H264Encoder
+
+camera = Picamera2()
+camera_config = camera.create_still_configuration(main={"size": (1000, 1000)}, lores={"size": (640, 480)}, display="lores")
+camera.configure(camera_config)
+
 s = socket()
 
 def send_image(image_data):
@@ -24,22 +29,28 @@ def rec_ans():
     
 
 
-host = "192.168.85.39" # Get local machine name
+host = "192.168.1.139" # Get local machine name
 port = 12345                # Reserve a port for your service.
 
 s.connect((host, port))
+camera.start_preview(Preview.NULL)
+camera.start()
+
 while True:
-    inp_img = input()
+    input()
     image_data = None
 
-    # camera.capture_one("data/captured.jpg")
+    camera.capture_file("data/captured.jpg")
     
-    with open(inp_img, 'rb') as fp:
+    with open("data/captured.jpg", 'rb') as fp:
         image_data = fp.read()
 
     assert(len(image_data))
     send_image(image_data)
+
     rec_ans()
 
 
 s.close()
+camera.stop()
+camera.stop_preview()

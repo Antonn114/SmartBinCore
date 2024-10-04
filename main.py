@@ -9,7 +9,7 @@ import signal
 import cv2
 
 camera = SBCamera()
-vit = SBVT('models/waste-classification/', 'models/waste-classification/')
+vit = SBVT('models/garbage-classification/', 'models/garbage-classification/')
 motor1 = DRV8825(dir_pin=13, step_pin=19, enable_pin=12, mode_pins=(16, 17, 20))
 motor2 = DRV8825(dir_pin=24, step_pin=18, enable_pin=4, mode_pins=(21, 22, 27))
 
@@ -35,15 +35,14 @@ while True:
     input()
     camera.capture_one('data/captured.jpg')
     image = cv2.imread('data/captured.jpg')
-    orig_h = image.shape[0]
-    orig_w = image.shape[1]
-    crop_img = image[orig_h//4:orig_h*3//4, orig_w//6: orig_w*4//6]
-    cv2.imwrite('data/cropped.jpg', crop_img)
-    res = vit.predict_image(crop_img)
-    print(res)
-    if (res not in ans_idx):
-        res = "other"
-    idx = ans_idx.index(res)
+    # orig_h = image.shape[0]
+    # orig_w = image.shape[1]
+    # crop_img = image[orig_h//4:orig_h*3//4, orig_w//6: orig_w*4//6]
+    # cv2.imwrite('data/cropped.jpg', crop_img)
+    # print(res)
+    ## if (res not in ans_idx):
+    #    res = "other"
+    idx = 0
     motor1.TurnStep(Dir=motor_ans_dir_first[idx], steps=motor_ans_speed_first[idx], stepdelay=motor_delay)
     sleep(0.5)
     motor2.TurnStep(Dir="forward", steps=4000, stepdelay=motor_delay)
